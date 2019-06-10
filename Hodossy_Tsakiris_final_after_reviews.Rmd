@@ -1,0 +1,582 @@
+---
+title             : "I Regulate therefore I am: Investigating Congruency-effects in Autonomic Responses and their Role in Interoceptive Processing "
+shorttitle        : "I Regulate therefore I am"
+author: 
+  - name          : "Lilla Hodossy"
+    affiliation   : "1"
+    corresponding : yes    # Define only one corresponding author
+    address       : "Egham Hill, Egham TW20 0EX, United Kingdom"
+    email         : "lilla.hodossy.2016@live.rhul.ac.uk"
+  - name          : "Manos Tsakiris"
+    affiliation   : "1,2"
+affiliation:
+  - id            : "1"
+    institution   : "Lab of Action and Body, Department of Psychology, Royal Holloway, University of London"
+  - id            : "2"
+    institution   : "The Warburg Institute, School of Advanced Studies"
+authornote: |
+  Lilla Hodossy, Department of Psychology, Royal Holloway, University of London; Manos Tsakiris, Department of Psychology, Royal Holloway, University of London; The Warburg Insitute, School of Advanced Studies   
+  Correspondence concerning this article should be addressed to Lilla Hodossy, Department of Psychology, Royal Holloway, University of London.
+abstract: |
+  
+  The experience of one's embodied sense of self is dependent on the integration of signals originating both from within and outwith one's body. During the processing and integration of these signals, the bodily self must maintain a fine balance between stability and malleability. Here we investigate the potential role of autonomic responses in interoceptive processing and their contribution to the stability of the bodily self.  Using a biofeedback paradigm, we manipulated the congruency of cardiac signals across two hierarchical levels: (i) the low-level congruency between a visual feedback and participant's own cardiac signal and (ii) the high-level congruency between the participants' beliefs about the identity of the cardiac feedback and its true identity. We measured the effects of these manipulations on high-frequency heart rate variability (HF-HRV), a selective index of phasic vagal cardiac control. In Experiment 1, HF-HRV was sensitive to low-level congruency, independently of whether participants attempted to regulate or simply attend to the biofeedback. Experiment 2 revealed a higher-level congruency effect, as participants' prior veridical beliefs increased HF-HRV while when false they decreased HF-HRV. Our results demonstrate that autonomic changes in HF-HRV are sensitive to congruencies on multiple hierarchical levels. Our findings have important theoretical implications for predictive coding models of the self as they pave the way for a more direct way to track the subtle changes in the co-processing of the internal and external milieus.
+keywords          : "vagal control, interoception, biofeedback, predictive coding, multisensory, self"
+wordcount         : ""
+bibliography      : ["library.bib"]
+floatsintext      : no
+figurelist        : no
+tablelist         : no
+footnotelist      : no
+lineno            : yes
+mask              : no
+draft             : no
+documentclass     : "apa6"
+classoption       : "man"
+output            : papaja::apa6_word
+csl               : https://tinyurl.com/apa6-no-disambiguation
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r load_packages, include = FALSE}
+library(papaja)
+library(readxl)
+library(lme4)
+library(ggeffects)
+library(sjPlot)
+library(sjmisc)
+library(effects)
+library(phia) 
+library(ggplot2)
+library(lattice)
+library(MASS)
+library(fitdistrplus)
+library(logspline)
+library(MuMIn)
+library(dplyr)
+library(buildmer)
+library(zoo)
+library(cowplot)
+library(dplyr)
+library(readr)
+library(gridExtra)
+library(imager)
+#setwd("C:/Users/hodos/Desktop/PHD 2018/write up_study23/upload these to osf")
+```
+
+```{r analysis_preferences}
+# Seed for random number generation
+set.seed(42)
+knitr::opts_chunk$set(cache.extra = knitr::rand_seed)
+# disable scientific notation (this causes long numbers to appear in full rather than being truncated)
+options(scipen = 999) 
+
+```
+#1. Introduction
+Our body has an ever-present role in the perception of ourselves and the world around us. Although this permanence provides the experience of continuity, recent models of bodily self-awareness emphasize its constructed nature and explore the ways in which different signals from multiple sources are integrated across different hierarchical levels [@Friston2005b; @Apps2014; @Seth2013a; @DePreester2009]. @Tsakiris2011b were among the first to show that external and internal bodily signals are integrated to provide a coherent, multi-sensory experience of one's own body. The Rubber Hand Illusion [@Botvinick1998c; for review see @Tsakiris2010b] is a classic example of the *exteroceptive* channel's input on self-awareness by showing how the experience of body-ownership can be influenced by the perception of the body from the outside, using exteroception. Watching a rubber hand being stroked in synchrony with one's own hidden hand, the visible rubber hand will overrule the real hand and will be experienced as one's own body part. The Enfacement Illusion reveals similar effects on facial identity [@Sforza2010; @Tsakiris2008g]. In both cases the multi-sensory (visuo-tactile) integration aims at the resolution of inter-sensory conflicts to produce a coherent representation of the world and the body - even if that induces changes in the perception of self. The other channel of information available for self-awareness contains *interoceptive* information about the body, which originates from within one's body. Recent theories emphasize the central role of interoceptive processing in representing the core self, constructed by basic homeostatic processes and inputs from visceral organs [@Craig2010; @Damasio2010]. In summary, even though both sources are essential in the construction of selfhood, the exteroceptive signals primarily foster the malleability, whilst interoceptive signals contribute towards the stability of self-awareness [@Allen2018].  
+Moreover, recent evidence suggests that interoceptive and exteroceptive signals are not processed in isolation. Studies using biofeedback aimed to explore the *integration* of interoceptive and exteroceptive signals, by inducing *multi-sensory* stimulation that combines interoceptive and exteroceptive signals [@Schandry1990; @DePascalis1991; @Pfeiffer2017; @Canales-Johnson2015a; @Salomon2016; @Suzuki2013a; @Aspell2013a; @Sel2017; @Azevedo2016]. Specifically, all these studies used cardiac signals as interoceptive input in combination with a visual or auditory stimulus that could either be presented synchronously or asynchronously with cardiac systole. An effect of synchrony was revealed in many different domains such as the detection of heartbeats after biofeedback [@Schandry1990], cortical processing of cardiac signals measured by heartbeat evoked potentials [@Schandry1990; @Pfeiffer2017; @Sel2017], and insular activity [@Salomon2016] - in most cases without any conscious awareness of these effects. Some of these studies suggest that the synchrony effect can be modulated by trait-like characteristics of interoception like baseline measures of heartbeat detection [@Schandry1990], interoceptive accuracy [@Azevedo2016; @Sel2017] and interoceptive learning abilities [@Canales-Johnson2015a], while others revealed null-results in this domain [@DePascalis1991]. Synchrony effects were also prominent for the identification of self [@Aspell2013a; @Suzuki2013a] or with another person [@Sel2017] - suggesting a transfer-effect to higher level cognitive and social domains. Visual signals that occur at cardiac frequency were also found to take longer to access visual awareness - probably signaling interoceptive sensory attenuation [@Salomon2016]. These results support the hypothesis that the processing of co-occurring exteroceptive and interoceptive signals is crucial for self-awareness. However, the question arises as to whether the integration of these signals is performed via temporal synchrony or more general perhaps *amodal congruencies* between the body and environment. In the study by Peira and colleagues [-@Peira] the biofeedback represented changes in heart rate through color changes on the screen which they updated every half second. When heart rate accelerated the colour changed towards red, when it decelerated it changed towards green. Even though the true feedback did not provide exact temporal synchrony by capturing individual heartbeats of participants an effect resembling a synchrony effect was revealed. Participants were better at intentionally down-regulating their heart rate during true biofeedback than during fake feedback, suggesting a more general *congruency* (although still temporally aligned) effect. In our study we expand on this idea and explore the potential role congruency on even higher hierarchical levels of the self-model.
+
+Predictive Coding (PC) principles provide a suitable framework for considering the mechanisms underlying synchrony (and potentially congruency) effects and the processes enabling multi-sensory integration overall. According to the PC account, the Bayesian brain continuously generates probabilistic models about the sources of sensory inputs [@Friston2005b; @Apps2014; @Seth2013a] by comparing descending predictions or priors with ascending sensory inputs. Discrepancies between the estimated and the perceived world generate prediction errors (PE-s) that the brain attempts to minimize through either actions altering sensory input (i.e. exteroceptive or interoceptive signals) or by updating predictions about the causes of sensory stimuli (i.e. body ownership). A supra modal self-model would arise from the integration of multiple predictions and PE-s on different hierarchical levels and across several sensory and motor domains. This requires a novel approach in experimental design by shifting the focus from exploring the circumstances inducing PEs as a result of (a)synchrony to the study of the mechanism itself. A more targeted investigation of PE requires the identification of an outcome variable that is associated with the PE *per se*. With our study, we attempted to fill this gap by exploring the integration of sensory inputs and predictions by studying the effect of congruencies across multiple hierarchical levels and by proposing a way to detect physiological responses involved in the *generation* or the *minimization* of PE. It has been recently suggested that, at the psychological level, interoceptive autonomic signaling can be considered as a continuous estimate of self-stability, given its role in homeostasis and its inherent self-related nature [@Allen2018]. In line with this control-oriented approach, @Petzschner2017 suggested that interoceptive PE-s could be minimized through autonomic reflexes. This would also mean that the discrepancies between stability estimations and stability relevant signals of the external would lead to changes in autonomic signaling. In other words, PE-s or their minimization could potentially be tracked via autonomic responses. 
+
+Among a wide range of physiologic factors that determine the functioning of the heart, the autonomic nervous system (ANS) is the most prominent [@Thayer2012]. The ANS maintains internal homeostasis and promotes the adaptive flexibility of the nervous system, which is often quantified by measures of heart rate variability (HRV). In the past HRV was suggested to have the ability to index the brain's capacity to integrate signals from the inside and outside of the body to support adaptive regulation [@Thayer2012]. Together with the previously discussed theories on the contribution of autonomic responses to predictive self-processes --- such as the estimation of self-stability [@Allen2018] and the minimization of interoceptive PE-s [@Petzschner2017] --- we hypothesised that high frequency HRV (HF-HRV) could provide a more direct physiological outcome measure of PE-s (or their minimization). This idea could be tested with a design that addresses the responsiveness and sensitivity of HF-HRV to essential components of predictive self-processes. For HF-HRV to serve as a useful physiological marker or outcome measure of PE-s, HF-HRV needs to be (i) sensitive to sensory inputs that are relevant for maintaining the stability of the self (ii) on multiple hierarchical levels, such as congruencies between interoceptive and exteroceptive signals or congruencies between more general beliefs and multi-sensory input. To test this hypothesis, we performed two experiments to directly measure changes in vagal control in response to congruencies and incongruencies arising from different levels of hierarchy. Experiment 1 and 2 both explored low-level congruency effects by using a cardio-visual biofeedback that was either congruent or incongruent with participants' cardiac activity. In addition to this Experiment 1 investigated the interaction between biofeedback congruency and the level of task involvement. Here participants either actively regulate (stability facilitating behavior) or perform an attention task related to the biofeedback (stability neutral behavior). Although recent studies on biofeedback [@Peira2013; @Peira] found a facilitating effect of regulation during congruent biofeedback, this effect did not replicate in a different context [@Jones2015] Moreover, these studies did not include HF-HRV in their measures. In Experiment 2 we further explored higher level congruency by manipulating participants' prior beliefs about the ownership of the biofeedback signal, and therefore succeeded in inducing congruency or incongruency between multi-sensory biofeedback and participants' beliefs (i.e. they believed the feedback belongs to them or someone else), allowing us to test, for the first time to the best of our knowledge, a higher-level congruency effect on PE-s.
+
+```{r Carry-over effects of task, include=FALSE}
+#explore baselines under different conditions
+ALL_TRIALS_BASELINE <- read_excel("EXP1_BL_CV_main.xls.xlsx")
+names(ALL_TRIALS_BASELINE)[1]<-'PPT'
+
+#scale covariates, create copy of baseline as a DV
+ALL_TRIALS_BASELINE$CV_RR<-scale(ALL_TRIALS_BASELINE$RR,center=TRUE,scale=TRUE)
+ALL_TRIALS_BASELINE$DV_BL_HF<-ALL_TRIALS_BASELINE$BL_HF
+ALL_TRIALS_BASELINE$CV_BL_HF<-scale(ALL_TRIALS_BASELINE$BL_HF,center=TRUE,scale=TRUE)
+ALL_TRIALS_BASELINE$CV_BL_HR<-scale(ALL_TRIALS_BASELINE$BL_HR,center=TRUE,scale=TRUE)
+ALL_TRIALS_BASELINE$CV_BL_RR<-scale(ALL_TRIALS_BASELINE$BL_RR,center=TRUE,scale=TRUE)
+
+#declare factors
+ALL_TRIALS_BASELINE$Congruency<-factor(ALL_TRIALS_BASELINE$Congruency)
+ALL_TRIALS_BASELINE$BF<-factor(ALL_TRIALS_BASELINE$BF)
+ALL_TRIALS_BASELINE$Regulation_order<-factor(ALL_TRIALS_BASELINE$Regulation_order)
+
+#test if baselines under different conditions are different from each other significantly
+B1<-lmer(DV_BL_HF~ 1 + (1|PPT), data=ALL_TRIALS_BASELINE, REML=FALSE)
+B2<-lmer(DV_BL_HF~ BF*Congruency + (1|PPT), data=ALL_TRIALS_BASELINE, REML=FALSE)
+anova(B1,B2)
+summary(B2)
+
+#In the bit below average baselines are used as they are not different
+
+#show order effects
+ALL_TRIALS_av_BL<-read_excel("EXP1_order_effect.xlsx")
+
+#declare factors
+ALL_TRIALS_av_BL$Congruency<-factor(ALL_TRIALS_av_BL$Congruency)
+ALL_TRIALS_av_BL$BF<-factor(ALL_TRIALS_av_BL$BF)
+ALL_TRIALS_av_BL$Regulation_order<-factor(ALL_TRIALS_av_BL$Regulation_order)
+ALL_TRIALS_av_BL$Time<-factor(ALL_TRIALS_av_BL$Time)
+
+#rename levels-for plots later
+levels(ALL_TRIALS_av_BL$Regulation_order)[levels(ALL_TRIALS_av_BL$Regulation_order)=="1"] <- "Regulation in first half"
+levels(ALL_TRIALS_av_BL$Regulation_order)[levels(ALL_TRIALS_av_BL$Regulation_order)=="2"] <- "Regulation in second half"
+
+#centering covariates, but they are already centered in the baseline spreadsheet
+
+#reveals BF task order effect
+order_effect0<-lmer(CH_DV_HF~ 1 + (1|PPT), data=ALL_TRIALS_av_BL, REML=FALSE)
+order_effect1<-lmer(CH_DV_HF~ Regulation_order + (1|PPT), data=ALL_TRIALS_av_BL, REML= FALSE)
+
+anova(order_effect0,order_effect1)
+
+order_effect1<-lmer(CH_DV_HF~ Regulation_order + (1|PPT), data=ALL_TRIALS_av_BL, REML= TRUE)
+
+#get effects 
+order_all_effects<-allEffects(order_effect1)
+order_all_effects1<-order_all_effects[[1]]
+order_all_effects.df<-as.data.frame(order_all_effects1)
+
+order_statsDF<-get_model_data(order_effect1)
+order_R2<-r.squaredGLMM(order_effect1)
+
+desc_order<-psych::describeBy(ALL_TRIALS_av_BL$CH_DV_HF, ALL_TRIALS_av_BL$Regulation_order)
+
+```
+
+```{r Plot carry-over effects in Study 1, include=FALSE}
+#plot estimates -this is not included in the MS, but included here for future reference
+ggplot(order_all_effects.df,aes(x=Regulation_order,y=fit, ymin=lower,ymax=upper)) + 
+  geom_pointrange(position=position_dodge(width=.1)) +
+  xlab("Regulation task order")+ ylab("Change in HF-HRV from average baseline") + ggtitle("Order effect of task engagement") + 
+  theme_classic()+ theme_bw(base_size=14)
+```
+
+```{r Fitting distributions, include=FALSE}
+#using first half only due to order effects
+HALF_TRIALS_ST1<-read_excel("HALF_TRIALS_EXP1.xlsx")
+#declarefactors
+HALF_TRIALS_ST1$Congruency<-factor(HALF_TRIALS_ST1$Congruency)
+HALF_TRIALS_ST1$Time<-factor(HALF_TRIALS_ST1$Time)
+HALF_TRIALS_ST1$BF<-factor(HALF_TRIALS_ST1$BF)
+HALF_TRIALS_ST1$recognition_accuracy<-factor(HALF_TRIALS_ST1$recognition_accuracy)
+#rename 1st coloumn PPT
+names(HALF_TRIALS_ST1)[1]<-'PPT'
+#name levels here for graph
+levels(HALF_TRIALS_ST1$Congruency)[levels(HALF_TRIALS_ST1$Congruency)=="1"] <- "Congruent"
+levels(HALF_TRIALS_ST1$Congruency)[levels(HALF_TRIALS_ST1$Congruency)=="2"] <- "Incongruent"
+levels(HALF_TRIALS_ST1$BF)[levels(HALF_TRIALS_ST1$BF)=="1"] <- "Attention"
+levels(HALF_TRIALS_ST1$BF)[levels(HALF_TRIALS_ST1$BF)=="2"] <- "Regulate"
+levels(HALF_TRIALS_ST1$Time)[levels(HALF_TRIALS_ST1$Time)=="1"] <- "Baseline"
+levels(HALF_TRIALS_ST1$Time)[levels(HALF_TRIALS_ST1$Time)=="2"] <- "Task"
+
+#explore transformations
+HALF_TRIALS_ST1$SQRT_DV_HF<-sqrt(HALF_TRIALS_ST1$DV_HF)
+HALF_TRIALS_ST1$LN_DV_HF<-log(HALF_TRIALS_ST1$DV_HF)
+
+normal_HF<- fitdist(HALF_TRIALS_ST1$DV_HF, "norm")
+normal_SQRT_HF<- fitdist(HALF_TRIALS_ST1$SQRT_DV_HF, "norm")
+normal_LN_HF<-fitdist(HALF_TRIALS_ST1$LN_DV_HF, "norm")
+
+plot(normal_HF)
+plot(normal_SQRT_HF)
+plot(normal_LN_HF)
+
+shTest<-shapiro.test(HALF_TRIALS_ST1$DV_HF)
+shapiro.test(HALF_TRIALS_ST1$SQRT_DV_HF)
+shapiro.test(HALF_TRIALS_ST1$LN_DV_HF)
+#sqrt transform would make it good 
+#in supplementary material:use link=sqrt and keep raw data
+```
+
+```{r Experiment 1, include=FALSE}
+#main analysis for Experiment 1
+#create dataframe
+HALF_TRIALS_ST1B<-HALF_TRIALS_ST1 %>%
+mutate(CV_BL_HF1 = rep(HALF_TRIALS_ST1$CV_BL_HF[HALF_TRIALS_ST1$Time=="Baseline"],each=2))%>%
+mutate(CH_HF = rep(HALF_TRIALS_ST1$DV_HF[HALF_TRIALS_ST1$Time=="Task"]-
+                     HALF_TRIALS_ST1$DV_HF[HALF_TRIALS_ST1$Time=="Baseline"],each=2))%>%
+filter(Time == "Task")
+
+HALF_TRIALS_ST1B$Congruency<-factor(HALF_TRIALS_ST1B$Congruency)
+HALF_TRIALS_ST1B$BF<-factor(HALF_TRIALS_ST1B$BF)
+
+#Low level congruency effect on absolute scores with square root link, this is moved to the supplementary material
+#MC0<-glmer(DV_HF~ 1 + (1|PPT), data=HALF_TRIALS_ST1B, family=gaussian(link="sqrt"),glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
+#MC2<-glmer(DV_HF~ CV_BL_HF1 + (1|PPT), data=HALF_TRIALS_ST1B, family=gaussian(link="sqrt"),glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
+#MC3<-glmer(DV_HF~ CV_BL_HF1+Congruency + (1|PPT), data=HALF_TRIALS_ST1B, family=gaussian(link="sqrt"),glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
+#MC4<-glmer(DV_HF~ CV_BL_HF1+Congruency*CV_BL_HF1 + (1|PPT), data=HALF_TRIALS_ST1B, family=gaussian(link="sqrt"),glmerControl(optimizer="bobyqa", optCtrl = list(maxfun = 100000)))
+#anova(MC0,MC2,MC3,MC4)
+
+#optimal model selection based on AIC values
+st1.opt.mod<-buildmer(SQRT_DV_HF~ CV_BL_HF1+CV_RR+Congruency*BF + (1|PPT), data=HALF_TRIALS_ST1B,crit='AIC')
+summary(st1.opt.mod)
+
+st1<-lm(SQRT_DV_HF ~ CV_BL_HF1 + Congruency + BF, data = HALF_TRIALS_ST1B)
+tab_model(st1)
+abs_scores<-st1
+#create dataframe from the observed effects/estimates for ggplot later
+st1_abs<-allEffects(abs_scores)
+st1_abs1<-st1_abs$Congruency
+st1_abs1.df<-as.data.frame(st1_abs1)
+st1_abs1.df$Congruency<-factor(st1_abs1.df$Congruency)
+st1_abs_desc<-psych::describeBy(HALF_TRIALS_ST1B$DV_HF, HALF_TRIALS_ST1B$Congruency)
+#create dataframe from observed stats
+st1_abs_statsdf<-get_model_data(abs_scores)
+#get a measure of effect size with R squared from summary lm
+st1_abs_sum<-summary(abs_scores)
+
+#cardiac recognition accuracy
+HALF_TRIALS_accuracy<-read_excel("HALF_ACCURACY1.xlsx")
+
+HALF_TRIALS_accuracy$recognition_accuracy<-as.integer(HALF_TRIALS_accuracy$recognition_accuracy)
+HALF_TRIALS_accuracy$Congruency<-factor(HALF_TRIALS_accuracy$Congruency)
+HALF_TRIALS_accuracy$BF<-factor(HALF_TRIALS_accuracy$BF)
+
+levels(HALF_TRIALS_accuracy$Congruency)[levels(HALF_TRIALS_accuracy$Congruency)=="1"] <- "Congruent"
+levels(HALF_TRIALS_accuracy$Congruency)[levels(HALF_TRIALS_accuracy$Congruency)=="2"] <- "Incongruent"
+levels(HALF_TRIALS_accuracy$BF)[levels(HALF_TRIALS_accuracy$BF)=="1"] <- "Attention"
+levels(HALF_TRIALS_accuracy$BF)[levels(HALF_TRIALS_accuracy$BF)=="2"] <- "Regulate"
+
+#logistic regression on accuracy scors
+accuracy<-glm(recognition_accuracy ~BF*Congruency,family=binomial(link='logit'),data=HALF_TRIALS_accuracy)
+#get effects 
+accuracy_statsDF<-get_model_data(accuracy)
+tab_model(accuracy)
+accuracy_R2<-r.squaredGLMM(accuracy)
+
+task_acc<-plyr::count(HALF_TRIALS_accuracy, c("recognition_accuracy"))
+acc_prob<-task_acc[[2,2]]/sum(task_acc[[2]])*100
+
+```
+
+#2. Experiment 1
+##2.1. Methods
+We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) -->
+
+###2.1.1. Participants.
+An a priori power analysis using G\*Power [version 3.1.9.2; @Faul2007] suggested a sample size of 35 to achieve 80% power (with $\alpha$ = 0.05) by estimating a medium effect size of (*f* = 0.25)given that most previous studies with a within subject design found middle to large effects of HF-HRV reactivity [e.g. @Rainville2006a; @Marci2007]. To be conservative we recruited N = 40 participants (`r length(which(HALF_TRIALS_ST1$Sex == 1))/4` males, M~AGE~ = `r mean(HALF_TRIALS_ST1$Age)`, SD~AGE~ = `r sd(HALF_TRIALS_ST1$Age)`) through the Psychology Subject Pool of Royal Holloway, University of London. Participants gave their informed consent, with approval by the Ethics Committee, Department of Psychology, Royal Holloway University of London. No participants had to be removed from the final sample.
+
+### 2.1.2. Experimental procedure.
+Experiment 1 had a repeated measures design (Figure 1A) with two conditions of interest: Biofeedback Task (referring to the way people engaged with the biofeedback signal i.e. Regulation or Attention) and Biofeedback Congruency (depicting the presence or lack of congruency between participants cardiac activity and visual feedback i.e. Congruent or Incongruent). On arrival participants were seated on a comfortable chair 60 cm from a monitor (56.5 x 33.5 cm). The experiment alternated between baseline and active task measures. During the baseline recording participants were instructed to keep their eyes open and breath normally and silently think about their day. After the baseline measure it was explained to the participants that they will be observing movements of a biofeedback bar representing either their own or someone else's heart rate changes from a previous session. The instructions described the way they could interpret the movements of the bar: when the heart beats faster the bar will be taller, and when it beats slower the bar will be shorter although a general fluctuating motion is also to be expected. A yellow pulse would also appear with every heartbeat, but participants did not receive an explanation about the pulsing of the feedback bar. In the Regulation condition participants were instructed to attempt lowering the bar as much as possible via relaxation whilst keeping their eyes open and their breathing as normal as possible. Participants had the chance to freely experiment with the feedback bar for 1 minute before the first time they attempted to regulate. In the Attention condition participants were instructed to simply count the number of a randomly appearing green pulse and subsequently report it to the experimenter - which requires high attention to the feedback, but no intentional interoception or regulation. At the end of every task participants had to indicate whether they thought the feedback was representing their own or someone else's heart. At the beginning of each task participants received instructions specific to the Biofeedback Task condition they were completing. We organized the experiment into two blocks separated by a 5-minute-long break half-way through. The order of tasks was assigned to the participants prior to the experiment in a semi-randomized and counterbalanced way (Figure 1B). Participants could either start with the Attention or the Regulation condition - within which they were randomly presented with a congruent or incongruent feedback. After the break they continued the experiment with Biofeedback Task condition that is different from the one they started with. Participants completed 4 Biofeedback tasks and 4 baseline measures, each of them lasting 5 minutes (40 minutes in total).
+
+![*Figure 1.*(A) Schematic representation of biofeedback paradigm in Experiment 1 consisting of the factors of Biofeedback Task (Attention or Regulation) and Biofeedback Congruency (Congruent or Incongruent). The eye symbol depicts the Attention condition whilst the heart symbol represents the Regulation condition of the Biofeedback Task factor. (B) Timeline of task execution, which includes two time series alternating between the biofeedback task and baseline (fixation cross). Note. C: Congruent, IC: Incongruent.](Exp1.png)
+
+Participants received instantaneous and continuous feedback provided by a red bar that was changing across two dimensions simultaneously: in its height - whereby changes in height indicated changes in heart rate - and in its color - whereby pulses in yellow indicated individual heartbeats. Analogue output of inter beat intervals (IBI-s) was obtained online and recorded digitally on a PC into MATLAB (MathWorks, Sherborn, Mass., USA). Within MATLAB, a script was created for providing visual display to the subject during biofeedback exercises. To establish the center of the bar serving as a reference point 10 IBI-s were averaged prior to receiving any feedback. This value represented the middle point of potential values on the feedback bar. The parameters of the biofeedback bar were scaled to every individuals' baseline. To make the feedback more sensitive to the changes in the lower ranges of heart rate we set the minimum of the bar by subtracting the quarter of the participants initial heart rate while we created the maximum value by adding the half of the measured baseline. The required change for every step was also scaled accordingly the participants' baseline. The bar was set to the middle at the beginning of every task. Most previous studies created asynchronous feedback by changing the frequency of the participants own estimated heart-rate to be either 30% slower or faster [e.g. @Suzuki2013a]. Unlike these studies, we used a database of incongruent IBI series (N = 72, M~IC_IBI~ = 779.89, SD~IC_IBI~ = 142.03) collected from a completely different sample of participants who completed the cardiac recognition task on a previous occasion. We decided to do so as in the piloting stage of this experiment we found that participants consistently performed below chance when trying to differentiate between congruent and incongruent feedback when presented with their own altered heartbeats. In other words, participants were more likely to respond incorrectly than correctly when identifying the source of the feedback. On the contrary, participants stood a higher chance to be accurate when the incongruent feedback was based on cardiac data of other individuals rather than their own. Given that cardiac recognition was of our interest in Study 1 we decided to use this database to create a task that is challenging yet accomplishable. The incongruent feedback was tailored for every participant by matching them with a similar, adjusted IBI series based on their average heart rate. We intended to keep the level of incongruency between conditions (and across participants) as constant as possible. We addressed this by adjusting, in every trial, for the percentage difference between the incongruent signal and the participant's own baseline. In the Attention condition the pulse appeared green following a randomized pattern (approximately 50% of times of all pulses).
+
+### 2.1.3. Measures.
+Three disposable ECG electrodes were placed in a modified lead I chest configuration: two electrodes were positioned underneath the left and right collarbone and another on the participant's lower back on the left side. The ECG signal was recorded with a Powerlab 8/35 (Powerlab, ADInstruments, http://www.adinstruments.com/) using LabChart8 Pro software. The sampling rate was 1000 Hz and a hardware band-pass filter (Bio Amp 132) between 0.3 and 1000 Hz was applied. Heartbeats were detected online with a hardware-based function (fast output response), which identifies the ECG R-wave with a delay smaller than 1 ms (www.adinstruments.com/) by detecting when the amplitude exceeds an individually defined threshold. Internal lab reports using this method confirm that the software presenting the stimuli receives the transistor-transistor logic (TTL) pulse signaling a heartbeat and can process it within <2 ms. Every heart trace record was visually examined for artifacts and missing, or additional R-wave-induced beats were manually corrected if necessary. We analyzed the beat-to-beat interval variation of heartbeat traces using the HRV Add-On of LabChart8 Pro, which generates the Spectrum Plot (Frequency to Power) using the Lomb Periodgram Method (least-squares spectral analysis). Periodic components of heart rate variability aggregates in frequency bands. The respiratory frequency band is considered to range from 0.15 to 0.4 Hz in the high frequency band. We decided to use respiratory/high frequency heart rate variability as our main measure, because under appropriate recording and data processing conditions it reflects phasic vagal impact upon the heart [@Berntson2007] and it has been reliably used during shorter periods ( i.e. 2 - 5 mins) at psychophysiological studies [@Camm]. We have specifically chosen the high frequency range instead of low-frequency (LF) or the LF / HF measure as LF reflects an indistinguishable mixture of sympathetic a parasympathetic influences rather than changes in vagal control only [e.g. @Eckberg1997; @Goedhart2008; @Heathers2012; @Billman2013a; @ReyesdelPaso2013]. HF-HRV is a respiratory rate and depth dependent phenomenon and is uninterpretable in the absence of quantification of respiratory parameters. Respiratory rate (RR) is a stronger determinant of respiratory/high frequency HRV within typical breathing ranges than tidal volume [@Berntson1997], therefore the administration of this parameter is fundamental. Confounds could arise if individual differences in respiration are present or there are differences across experimental conditions that push the respiratory power outside the analytical bandwidth [@Berntson2007]. For this reason we registered and checked for the effects associated with the changes in respiratory rate in every condition across both studies. We used a respiratory belt transducer (ADInstruments, http://www.adinstruments.com/) to control for respiration. Given that the length of recording could affect the measures of HRV, we used the recommended 5 minutes epoch in every baseline and task, so we can relate our finding to most previous studies. We also recorded participants accuracy in recognizing the source of the feedback (Self or Other), although ideally more trials would be required for reliable measure of cardiac recognition.
+
+## 2.2 Results
+
+We used *R* [Version 3.5.1; @R-base] for all our analyses. A test of normality was conducted for the dependent variable using the Shapiro-Wilks test and revealed that the assumption of normality was significantly violated (*p* `r printp(shTest[[2]])`). The violation of normality is expected at measures of HRV and normally addressed by running the statistical analyses on the transformed value. We explored the distribution of different transformations with the *fitdistrplus* [Version 1.0.9; @R-fitdistrplus] and *logspline* [Version 2.1.11; @R-logspline] packages. For further analyses on HF-HRV we chose the square root transformed values over the logarithmic one as the logarithmic transformation proved to be too strong a correction for the modest positive skew of the data. Descriptive statistics and confidence intervals are noted in text. For analysis on the untransformed values using a generalized linear mixed effects model please refer to the Supplementary material.  
+
+Before our main analysis we checked for potential carry-over effects. Data analysis revealed a strong carry-over effect depending on the Biofeedback Task conditions $\beta$ = `r printnum(order_statsDF$estimate[1])`, [CI] = `r printnum(order_statsDF$conf.low[1])` -- `r printnum(order_statsDF$conf.high[1])`, *p* = `r printp(order_statsDF$p.value[1])`, $R^2$~MARGINAL~ = `r printnum(order_R2[[1]])`, $R^2$~CONDITIONAL~ = `r printnum(order_R2[[2]])`. This meant that we could only keep the first block of Experiment 1 as the effects associated with our manipulation and the carry-over effects are inseparable in the second block. As a result, Biofeedback Task became a between-subjects variable, which probably introduced limitations of power for this factor (Biofeedback Congruency remained a within-subject factor and powered-enough). The rest of results presented from Experiment 1 are only using data from the first half of the study.  
+
+Experiment 1 had one dependent variable: HF-HRV (nu) and two categorical predictors: Biofeedback Task (1 = Attention; 2 = Regulation); Biofeedback Congruency (1 = Congruent; 2 = Incongruent). Respiratory rate and baseline HF-HRV and recognition accuracy were coded as covariates and included in the model only when significantly improving the model fit (also testing for potential interaction between a certain covariate and our main predictors). We selected the optimal model by using *buildmer* [Version 1.0; @Voeten2019] which can perform backward stepwise elimination based on the change in the set criterion (AIC in our case). We defined the maximal model as: 
+
+HF-HRV~SQUARE_ROOT~ ~ Biofeedback Congruency\*Biofeedback Task + HF-HRV~BASELINE~ + Respiratory Rate + (1|PPT)
+
+The expression outside the parentheses indicates fixed effects while the expression inside the random effects defined in the model (i.e. the intercept over participants) -- for more on random effects please refer to the Results section under Experiment 2. The model that was providing the best fit with our data was the following:
+
+HF-HRV~SQUARE_ROOT~ ~ Biofeedback Congruency + Biofeedback Task + HF-HRV~BASELINE~
+
+We ran a linear regression for our main statistical analysis -- using *stats* [Version 3.5.1; @R-base]. Relevant test-statistic were gathered by using *sjPlot* [Version 2.5.0; @R-sjPlot] and *sjmisc* [Version 2.7.4; @R-sjmisc] R packages. Our results revealed that HF-HRV (nu) was significantly higher in the Congruent condition (*M~C~* = `r printnum(st1_abs_desc$Congruent[[3]])`, *SD~C~* = `r printnum(st1_abs_desc$Congruent[[4]])`) than in the Incongruent conditions  (*M~INC~* = `r printnum(st1_abs_desc$Incongruent[[3]])`, *SD~INC~* = `r printnum(st1_abs_desc$Incongruent[[4]])`) $\beta$ = `r printnum(st1_abs_statsdf$estimate[2])`, [CI] = `r printnum(st1_abs_statsdf$conf.low[2])` -- `r  printnum(st1_abs_statsdf$conf.high[2])`, *p* = `r printp(st1_abs_statsdf$p.value[2])`, $R^2$ = `r printnum(st1_abs_sum$r.squared,digits=3)`, $R^2$~adjusted~ = `r printnum(st1_abs_sum$adj.r.squared)` when baseline HF-HRV was included in the model $\beta$ = `r printnum(st1_abs_statsdf$estimate[1])`, [CI] = `r printnum(st1_abs_statsdf$conf.low[1])` -- `r  printnum(st1_abs_statsdf$conf.high[1])`, *p* = `r printp(st1_abs_statsdf$p.value[1])`(Figure 2). Even though the optimal model includes the Biofeedback Task as a factor its effect was non-significant *p* = `r printp(st1_abs_statsdf$p.value[3])` Results are depicted by raincloud plots [@Allen2018a].  
+
+When analyzing the accuracy of cardiac recognition, we see that `r acc_prob`% of probability of correctly identifying Biofeedback Congruency across all conditions. Fitting a logistic regression on the binary values of accuracy did not reveal a significant interaction nor main effects of Biofeedback Congruency and Biofeedback Task OR = `r printnum(accuracy_statsDF$estimate[3])`, [CI] = `r printnum(accuracy_statsDF$conf.low[3])` -- `r  printnum(accuracy_statsDF$conf.high[3])`, *p* = `r printp(accuracy_statsDF$p.value[3])`, $R^2$~Cox&Snell~ = `r printnum(accuracy_R2[[2]])`, $R^2$~Nagelkerke~ = `r printnum(accuracy_R2[[1]])`.
+
+```{r prepare plot for Experiment 1, include=FALSE}
+#plot estimates
+
+source("R_rainclouds.R")
+source("summarySE.R")
+source("simulateData.R")
+
+# width and height variables for saved plots
+w = 6
+h = 3
+
+low_abs<-ggplot(HALF_TRIALS_ST1B, aes(x = Congruency, y = SQRT_DV_HF, fill=Congruency)) +
+  geom_flat_violin(position = position_nudge(x = .2, y = 0),adjust =2)+
+  geom_point(aes(x = as.numeric(Congruency)-.15, y = SQRT_DV_HF, colour=Congruency),position = position_jitter(width = .05), size = .25, shape = 20)+
+  geom_boxplot(aes(x = Congruency, y = SQRT_DV_HF, fill=Congruency),outlier.shape = NA, alpha = .5, width = .1)+
+  geom_line(data = st1_abs1.df, aes(x = as.numeric(Congruency)+.1, y = fit, colour=Congruency), linetype = 3)+
+  geom_point(data = st1_abs1.df, aes(x = as.numeric(Congruency)+.1, y = fit,colour=Congruency), shape = 18) +
+  geom_errorbar(data = st1_abs1.df, aes(x = as.numeric(Congruency)+.1, y = fit, ymin = lower, ymax = upper), width = .05)+
+  coord_flip()+scale_colour_brewer(palette = "Set1")+xlab("")+
+  scale_fill_brewer(palette = "Set1")+  ylab("HF-HRV (nu)")+
+  theme(axis.title.y=element_blank(),axis.text.y=element_blank(),axis.ticks.y=element_blank())+
+  theme(plot.title = element_text(size=12))+
+  theme(legend.position="bottom")
+
+```
+```{r, echo=FALSE,fig.cap = "Effect of Biofeedback Congruency (Congruent vs Incongruent) on the square root transformed HF-HRV (nu) values. The raincloud plot provides data distribution, the central tendency by boxplots and the jittered presentation of our raw data. Error bars indicate 95% confidence intervals around the estimates of the linear mixed effects model. The random intercept model depicting this lower level congruency effect also includes baseline HF-HRV (nu) as a covariate."}
+low_abs
+```
+
+### 2.2.1 Discussion of Experiment 1.
+We observed changes in HF-HRV associated with the integration of exteroceptive and interoceptive signals on a lower sensory level, but the level of task involvement did not have an additional effect. Receiving incongruent visual feedback with one's own cardiac activity was associated with a lower level of HF-HRV when compared to congruent feedback. These results indicate that changes in HF-HRV can potentially serve as an index of PE-s as it is sensitive to multisensory congruencies.
+It is important to note that the detected carry-over effects associated with the task order potentially makes the null finding of task involvement inconclusive. Although keeping only the first half of the experimental session was methodologically the right choice, it probably introduced power issues in terms of detecting the effects of task involvement. Nonetheless, similar to our null result, the study by Jones and colleagues [-@Jones2015] found no difference in regulation performance whilst receiving true or fake feedback which might question the potential facilitating effect of an increased level of task involvement. However, further research is needed to understand whether this effect requires certain circumstances to be present, or it is indeed non-existing. For instance, the carry-over effect from Experiment 1 implies that the task involvement effect could be more prominent *after* rather than *during* biofeedback. Another option is that behavioral regulation only has an effect if arousing stimuli are co-presented with the feedback - similarly to the design of Peira and colleagues' [-@Peira2013] in which participants were presented with arousing pictures during biofeedback. Finally, it is possible that the levels of task involvement were not distinct enough in our design. Asking participants to increase their heart rate might provide a better contrast to down-regulation than the attention condition.
+
+Having established a low-level congruency effect (known as synchrony effect in previous studies), we next investigated whether this congruency effect is generalizable to higher-levels, which would suggest a more amodal role in hierarchical predictive processing. Specifically, we were interested whether the manipulation of prior belief would influence the effects of feedback congruency. 
+
+#3. Experiment 2
+```{r Experiment 2, include=FALSE}
+#Experiment 2
+ALL_TRIALS_ST2 <- read_excel("EXP2.xlsx")
+missing_rr<-length(which(ALL_TRIALS_ST2$CV_RR=="NA"))/length(ALL_TRIALS_ST2)
+
+#to have BL measures to check BL differences
+ALL_TRIALS_ST2$DV_BL_HF<-ALL_TRIALS_ST2$CV_BL_HF
+#change score
+ALL_TRIALS_ST2$CH_HF<-ALL_TRIALS_ST2$DV_HF-ALL_TRIALS_ST2$DV_BL_HF
+
+#make NA recognisable for R
+ALL_TRIALS_ST2$CV_RR<-as.numeric(ALL_TRIALS_ST2$CV_RR)
+ALL_TRIALS_ST2$CV_BL_HF<-as.numeric(ALL_TRIALS_ST2$CV_BL_HF)
+ALL_TRIALS_ST2$Water<-as.numeric(ALL_TRIALS_ST2$Water)
+ALL_TRIALS_ST2$Attention<-as.numeric(ALL_TRIALS_ST2$Attention)
+
+#centering the CVs 
+ALL_TRIALS_ST2$CV_RR<-scale(ALL_TRIALS_ST2$CV_RR,center=TRUE,scale=TRUE)
+ALL_TRIALS_ST2$CV_BL_HF<-scale(ALL_TRIALS_ST2$CV_BL_HF,center=TRUE,scale=TRUE)
+ALL_TRIALS_ST2$CV_Water<-scale(ALL_TRIALS_ST2$Water,center=TRUE,scale=TRUE)
+ALL_TRIALS_ST2$CV_Attention<-scale(ALL_TRIALS_ST2$Attention,center=TRUE,scale=TRUE)
+
+#create factors
+ALL_TRIALS_ST2$Repetition<-factor(ALL_TRIALS_ST2$Repetition)
+ALL_TRIALS_ST2$Time<-factor(ALL_TRIALS_ST2$Time)
+ALL_TRIALS_ST2$Congruency<-factor(ALL_TRIALS_ST2$Congruency)
+ALL_TRIALS_ST2$Belief<-factor(ALL_TRIALS_ST2$Belief)
+ALL_TRIALS_ST2$Order<-factor(ALL_TRIALS_ST2$Order)
+
+baseline<-subset(ALL_TRIALS_ST2,Time==1)
+task<-subset(ALL_TRIALS_ST2,Time==2)
+
+#interpolate the missing values
+task$CV_RR<-na.locf(task$CV_RR)
+
+#test if baselines under different conditions are different from each other significantly
+B1<-lmer(DV_HF~ Congruency*Belief +(1|PPT), data=baseline)
+summary(B1)
+#they are not
+
+#explore distributions 
+
+fn_ch <- fitdist(task$CH_HF, "norm")
+plot(fn_ch)
+
+#you can also play around with the normal distribution fit after different types of transformations and see if that makes it better
+summary(fn_ch) # look for AIC, BIC scores for model fit - anova doesn't work unfortunatelly
+shTest2<-shapiro.test(task$CH_HF)
+
+#interpret it as higher level congruency 
+#prepare space, create empty coloumn for this new variable 
+task[ncol(task)+1]<-"NaN"
+names(task)[ncol(task)]<-"BeliefFeedback_Congruency"
+#create codes for higher level congruency
+
+for (i in 1:nrow(task)) {
+  if(task[i,5] == task[i,6])
+  { task[[i,18]] <- 1
+  } else {
+    task[[i,18]] <- 0
+  }
+}
+
+task$BeliefFeedback_Congruency<-factor(task$BeliefFeedback_Congruency)
+
+#rename levels for ggplot later
+levels(task$Congruency)[levels(task$Congruency)=="1"] <- "Congruent"
+levels(task$Congruency)[levels(task$Congruency)=="2"] <- "Incongruent"
+levels(task$Belief)[levels(task$Belief)=="1"] <- "Self"
+levels(task$Belief)[levels(task$Belief)=="2"] <- "Other"
+
+levels(task$BeliefFeedback_Congruency)[levels(task$BeliefFeedback_Congruency)=="1"] <- "Congruent"
+levels(task$BeliefFeedback_Congruency)[levels(task$BeliefFeedback_Congruency)=="0"] <- "Incongruent"
+
+
+#check for order and repetition effects
+order_effectST2<-lmer(CH_HF~ Order + (1|PPT), data=task, REML=TRUE)
+repetition_effectST2<-lmer(CH_HF~ Repetition + (1|PPT), data=task, REML=TRUE)
+order_stats_ST2<-tab_model(order_effectST2)
+rep_stats_ST2<-tab_model(repetition_effectST2)
+#no effect of repetion or order
+
+#after review
+#model selection based on AIC
+st2.opt.mod<-buildmer(CH_HF~ Congruency*Belief+CV_Attention+CV_RR+CV_BL_HF+CV_Water+
+              (1|PPT), data=task,crit='AIC',quiet= TRUE)
+summary(st2.opt.mod)
+
+CH2<-lmer(CH_HF ~ CV_BL_HF+Congruency*Belief+ CV_RR+(1|PPT), data=task)
+tab_model(CH2)
+#explore simple effects
+simple_effect_congruency2<-testInteractions(CH2, fixed="Belief", across="Congruency",adjustment="bonferroni" )
+simple_effect_belief<-testInteractions(CH2, fixed="Congruency", across="Belief",adjustment="bonferroni" )
+
+
+#save interaction belief congruency effect in dataframe
+ch_eff<-allEffects(CH2)
+ch_eff
+ch_eff1<-ch_eff$"Congruency:Belief"
+ch.df<-as.data.frame(ch_eff1)
+#save output of analysis into variable
+html.CH2<-tab_model(CH2)
+#save stats in dataframe
+CH3_statsDF<-get_model_data(CH2)
+#effect size
+CH3_R2<-r.squaredGLMM(CH2)
+
+#alternative analysis on the higher level congruency codes
+CH2A<-lmer(CH_HF~ CV_BL_HF+BeliefFeedback_Congruency+CV_RR+ (1|PPT), data=task)
+#save outcome into variable
+html.CH3A<-tab_model(CH2A)
+#save into data frame
+CH3A_statsDF<-get_model_data(CH2A)
+#effect size
+CH3A_R2<-r.squaredGLMM(CH2A)
+
+#save effects of higher level congruency coded as a main effect into dataframe
+chA_eff<-allEffects(CH2A)
+chA_eff1<-chA_eff$BeliefFeedback_Congruency
+chA.df<-as.data.frame(chA_eff1)
+#describe dataset -means, standard deviation
+desc_ST2<-psych::describeBy(task$CH_HF, task$Belief:task$Congruency)
+desc_ST2_alt<-psych::describeBy(task$CH_HF, task$BeliefFeedback_Congruency)
+#sample descriptives
+malesST=length(which(ALL_TRIALS_ST2$GENDER == "MALE"))/16
+age=mean(ALL_TRIALS_ST2$Age)
+ageSD=sd(ALL_TRIALS_ST2$Age)
+
+##model on absolute scores
+st2.abs<-lmer(DV_HF ~ CV_BL_HF + Congruency*Belief + CV_RR + (1 | PPT), data =task)
+get_model_data(st2.abs)
+tab_model(st2.abs)
+```
+
+##3.1. Methods
+We report how we determined our sample size, all data exclusions (if any), all manipulations, and all measures in the study. <!-- 21-word solution (Simmons, Nelson & Simonsohn, 2012; retrieved from http://ssrn.com/abstract=2160588) -->
+
+### 3.1.1. Participants.
+An a priori power analysis using G\*Power [version 3.1.9.2; @Faul2007] suggested a sample size of 35 to achieve 80% power (with $\alpha$ = 0.05) by estimating a medium effect size of (*f* = 0.25). We recruited N = 40 (`r length(which(ALL_TRIALS_ST2$GENDER == "MALE"))/16` males, M~AGE~ = `r mean(ALL_TRIALS_ST2$Age)`, SD~AGE~ = `r sd(ALL_TRIALS_ST2$Age)`) participants through the Lab of Action and Body Database. To further increase the reliability of our measures, participants completed every task twice (in a completely randomized order).  Participants gave their informed consent, with approval by the Ethics Committee, Department of Psychology, Royal Holloway University of London. No participants had to be removed from the final sample.
+
+### 3.1.2. Experimental procedure.
+Experiment 2 had a repeated measures design (Figure 3A) with two conditions of interest: Belief (referring to participants' beliefs on the ownership of the feedback i.e. Self or Other) and Biofeedback Congruency (depicting the presence or lack of congruency between participants cardiac activity and visual feedback i.e. Congruent or Incongruent).
+
+To increase reliability of our measures and to reduce proneness to carry-over effects we improved the design from Experiment 1. Most importantly, participants engaged with the biofeedback signal only through attention in every task (and not through regulation). Also, participants completed every condition twice and the order presentation was fully randomized prior to the experiment. On arrival participants were seated on a comfortable chair 60 cm away from the screen (56.5 x 33.5 cm). Again, participants alternated between baseline and active task measures. During the baseline recording participants were instructed to keep their eyes open and breath normally and silently think about their day. After the baseline measure participants received instructions about the way the biofeedback bar works in identical way as in Experiment 1. Participants' beliefs were manipulated by the instructions at the beginning of each task. Participants were told that the biofeedback belonged to them or someone else. Unbeknown to the participants these beliefs could either match the Biofeedback Congruency condition or not. The repetition of tasks increased the time to complete study (from 45 to 90 minutes), therefore the experiment was conducted over two separate days. Baseline HF-HRV was recorded before every active task (Figure 3B). The stimuli in this experiment were identical to those in Experiment 1.
+
+
+![*Figure 3.*(A) Schematic representation of the biofeedback paradigm in Experiment 2 outlining the factors of Belief (Self or Other) and Biofeedback Congruency (Congruent or Incongruent). (B) Timeline of task execution during Biofeedback using a completely randomized pattern. Each biofeedback task was preceded by a baseline recording of HRV and the instructions on the identity of the forthcoming biofeedback. Note. BL: Baseline, BF: Biofeedback, C: Congruent, IC: Incongruent, S: Self, O: Other.](Exp2.png)
+
+### 3.1.3. Measures.
+Apart from some exception we used the same measures in this experiment as in Experiment 1. We used the same respiratory belt transducer (ADInstruments, http://www.adinstruments.com/) to control for respiration, but due to equipment failure we had to replace the respiratory band also resulting in losing `r missing_rr`% of our respiratory rate data. The missing values for these measures were interpolated with the most recent non-missing value also known as last observation carried forward (LOCF) method. 
+It has been recently suggested that water consumption could provoke changes in cardiovagal outflow and should be controlled during experimentation [@Heathers2018]. To address this issue, we contacted our participants prior to the experiment and instructed them to avoid extensive water consumption (more than a glass of water) within 1.5 hours prior to their appointment but also recorded their self-reports of actual water intake within the specified time. To make sure participants engaged with the biofeedback on an appropriate level throughout the whole task Experiment 1 conceptualized participants attention level by looking at their performance in counting green pulses. Attention scores were calculated for each trial with the following formula, where scores closer to 1 represent better performance:
+
+$$
+1-\frac{\left\lvert recorded\:green\:pulses\:-\:counted\:green\:pulses\right\rvert}{recorded\:green\:pulses}
+$$
+
+### 3.1.4. Debriefing.
+To understand if participants detected or had any suspicion about the belief manipulation, at the end of the whole experimental session, we asked them whether there was something that stood out for them at any point in the study. If the participant's response indicated suspicion regarding the instructions on the ownership of the feedback, then the participant was given a timeline of the experiment on which they had to mark the beginning of this impression. Only one participant expressed suspicion about the study, but it was unrelated to our belief manipulation.
+
+## 3.2. Results
+
+Given that the focus of interest was the potential interaction between Biofeedback Congruency and Belief we considered the change HF-HRV (nu) from baseline as our primary dependent variable. Experiment 2 had two predictors: Belief (ownership of signal: 1 = Self; 2 = Other); Biofeedback Congruency (1 = Congruent; 2 = Incongruent). We chose to model our data with a linear mixed model and Gaussian distribution as the change scores seemed to follow normality (*p* = `r printp(shTest2[[2]])`). We tested for the effects of water consumption, the level of attention, respiratory rate, task order and repetition and baseline HF-HRV - included in the model only when significantly improving the model fit. linear mixed models for our statistical analysis - using *lme4* [Version 1.1.17; @Bates2014]. Mixed effects modelling is particularly useful in within-subject designs where each subject has several measurements resulting in correlated errors for those measurements [@Baayen2008]. The solution to this problem is to let each subject have their own personal intercept (and/or slope) randomly deviating from the mean intercept as the errors around the personal regression lines this way will be uncorrelated. Reported p-values were computed via Wald-statistics approximation (treating t as Wald z). We selected the optimal model by using *buildmer* [Version 1.0; @Voeten2019] which can perform backward stepwise elimination based on the change in the set criterion (AIC in our case). We defined the maximal model as:  
+
+HF-HRV~CHANGE~ ~ Biofeedback Congruency\*Belief + HF-HRV~BASELINE~ + Water Consumption + Attention + Respiratory Rate + (1|PPT)
+The model that was providing the best fit with our data based on the AIC values was the following:
+
+HF-HRV~CHANGE~ ~ Biofeedback Congruency\*Belief + HF-HRV~BASELINE~ + Respiratory Rate + (1|PPT)
+
+The expression outside the parentheses indicates fixed effects while the expression inside the random effects defined in the model (i.e. the intercept over participants).
+Results revealed a significant interaction between Biofeedback Congruency and Belief $\beta$ = `r printnum(CH3_statsDF$estimate[5])`, [CI] = `r printnum(CH3_statsDF$conf.low[5])` -- `r  printnum(CH3_statsDF$conf.high[5])`, *p* = `r printp(CH3_statsDF$p.value[5])`, $R^2$~MARGINAL~ = `r printnum(CH3_R2[[1]])`, $R^2$~CONDITIONAL~ = `r printnum(CH3_R2[[2]])` when including baseline HF-HRV (nu) $\beta$ = `r printnum(CH3_statsDF$estimate[1])`, [CI] = `r printnum(CH3_statsDF$conf.low[1])` -- `r  printnum(CH3_statsDF$conf.high[1])`, *p* = `r printp(CH3_statsDF$p.value[1])`and respiratory rate *p* = `r printp(CH3_statsDF$p.value[4])` in the model (Figure 4A).
+To further investigate this interaction simple effects analysis was run with *phia* [Version 0.2.1; @R-phia] across the levels of the factors (Biofeedback Congruency and Belief) in our fitted model. In the analysis Bonferroni corrections were applied for multiple comparisons when exploring simple effects of interaction. Results revealed a significant difference in the changes of HF-HRV (nu) between Incongruent (M~INC_SELF~ = `r printnum(desc_ST2[[2]][[3]])`, SD~INC_SELF~ = `r printnum(desc_ST2[[2]][[4]])`) and Congruent conditions (M~C_SELF~ = `r printnum(desc_ST2[[1]][[3]])`, SD~C_SELF~ = `r printnum(desc_ST2[[1]][[4]])`) when participants were told that they are looking at their own cardiac feedback,  $\chi^2$ = `r printnum(simple_effect_congruency2[[1,3]])`,  *p* = `r printp(simple_effect_congruency2[[1,4]])` which can be considered as a replication of the lower level congruency effect identified by Experiment 1. In contrast with this when participants believed that the feedback was representing someone else's prerecorded cardiac activity there was no effect of Feedback Congruency $\chi^2$ = `r printnum(simple_effect_congruency2[[2,3]])`,  *p* = `r printp(simple_effect_congruency2[[2,4]])`. There was a significant simple effect of Belief resulting in a difference between the Self (M~INC_SELF~ = `r printnum(desc_ST2[[2]][[3]])`, SD~INC_SELF~ = `r printnum(desc_ST2[[2]][[4]])`) and Other conditions (M~INC_OTHER~ = `r printnum(desc_ST2[[4]][[3]])`, SD~INC_OTHER~ = `r printnum(desc_ST2[[4]][[4]])`)  when receiving incongruent feedback  $\chi^2$ = `r printnum(simple_effect_belief[[2,3]])`,  *p* = `r printp(simple_effect_belief[[2,4]])`, but not during congruent feedback  $\chi^2$ = `r printnum(simple_effect_belief[[1,3]])`,  *p* = `r printp(simple_effect_belief[[1,4]])`.
+This interaction effect can also be framed as higher-level or meta Congruency occurring between Belief and lower-level Congruency (i.e. Congruent with belief = when believing that Congruent feedback belongs to Self or when believing that Incongruent feedback belongs to Other; whilst Incongruent with belief = when believing Congruent feedback belongs to Other or Incongruent feedback belongs to Other). With this approach we see a significant main effect of meta Congruency between the Incongruent (M~IC_HIGHER~ = `r printnum(desc_ST2_alt$Incongruent[[3]])`, SD~IC_HIGHER~ = `r printnum(desc_ST2_alt$Incongruent[[4]])`) and Congruent conditions (M~C_HIGHER~ = `r printnum(desc_ST2_alt$Congruent[[3]])`, SD~C_HIGHER~ = `r printnum(desc_ST2_alt$Congruent[[4]])`) $\beta$ = `r printnum(CH3A_statsDF$estimate[2])`, *CI* = `r printnum(CH3A_statsDF$conf.low[2])` -- `r  printnum(CH3A_statsDF$conf.high[2])`, *p* = `r printp(CH3A_statsDF$p.value[2])`, $R^2$~MARGINAL~ = `r printnum(CH3A_R2[[1]])`, $R^2$~CONDITIONAL~ = `r printnum(CH3A_R2[[2]])` (Figure 4B).
+These results indicate that HF-HRV can be conceptualized as a generalizable index of PE-s in a hierarchical predictive model of the self as it is sensitive to the integration of different sources of information and their (in)congruency across multiple hierarchical levels.
+
+```{r prepare plot for Experiment 2, include=FALSE}
+#create combined plots
+get_legend<-function(myggplot){
+  tmp <- ggplot_gtable(ggplot_build(myggplot))
+  leg <- which(sapply(tmp$grobs, function(x) x$name) == "guide-box")
+  legend <- tmp$grobs[[leg]]
+  return(legend)
+}
+ch.df$Congruency <- factor(ch.df$Congruency, levels = unique(ch.df$Congruency), ordered=TRUE)
+ch.df$Belief <- factor(ch.df$Belief, levels = unique(ch.df$Belief), ordered=TRUE)
+
+
+#check if levels are the same for every df - to make sure it is well plotted
+task$BeliefFeedback_Congruency <- factor(task$BeliefFeedback_Congruency,levels = unique(ch.df$Congruency), ordered=TRUE)
+chA.df$BeliefFeedback_Congruency<-factor(chA.df$BeliefFeedback_Congruency,as.character(rev(chA.df$BeliefFeedback_Congruency)))
+##to double-check levels:
+#levels(task$Congruency)
+#levels(ch.df$Congruency)
+#levels(task$BeliefFeedback_Congruency)
+#levels(chA.df$BeliefFeedback_Congruency)
+
+belief_cong_int<-ggplot(task, aes(x = Belief, y = CH_HF, fill = Congruency)) +
+  geom_flat_violin(aes(fill = Congruency),position = position_nudge(x = .1, y = 0), adjust = 1.5, trim = FALSE, alpha = .5, colour = NA)+
+  geom_point(aes(x = as.numeric(Belief)-.15, y = CH_HF, colour = Congruency),position = position_jitter(width = .05), size = .25, shape = 20)+
+  geom_boxplot(aes(x = Belief, y = CH_HF, fill = Congruency),outlier.shape = NA, alpha = .5, width = .1, colour = "black")+
+  geom_line(data = ch.df, aes(x = as.numeric(Belief)+.1, y = fit, group = Congruency, colour = Congruency), linetype = 3)+
+  geom_point(data = ch.df, aes(x = as.numeric(Belief)+.1, y = fit, group = Congruency, colour = Congruency), shape = 18) +
+  geom_errorbar(data = ch.df, aes(x = as.numeric(Belief)+.1, y = fit, group = Congruency, colour = Congruency, ymin = lower, ymax = upper), width = .05)+
+  scale_colour_brewer(palette = "Set1")+
+  scale_fill_brewer(palette = "Set1")+
+  ylab("") + ggtitle("A") +
+  #theme(plot.title = element_text(hjust = 0))+
+  #theme_apa(base_size = 12, base_family = "",box = TRUE)+
+  theme(plot.title = element_text(size=12))+coord_flip()+
+  theme(legend.position="bottom")
+
+belief_cong_main<-ggplot(task, aes(x = BeliefFeedback_Congruency, y = CH_HF, fill=BeliefFeedback_Congruency)) +
+  geom_flat_violin(position = position_nudge(x = .2, y = 0),adjust =2)+
+  geom_point(aes(x = as.numeric(BeliefFeedback_Congruency)-.15, y = CH_HF, colour=BeliefFeedback_Congruency),position = position_jitter(width = .05), size = .25, shape = 20)+
+  geom_boxplot(aes(x = BeliefFeedback_Congruency, y = CH_HF, fill=BeliefFeedback_Congruency),outlier.shape = NA, alpha = .5, width = .1)+
+  geom_line(data = chA.df, aes(x = as.numeric(BeliefFeedback_Congruency)+.1, y = fit, colour=BeliefFeedback_Congruency), linetype = 3)+
+  geom_point(data = chA.df, aes(x = as.numeric(BeliefFeedback_Congruency)+.1, y = fit,colour=BeliefFeedback_Congruency), shape = 18) +
+  geom_errorbar(data = chA.df, aes(x = as.numeric(BeliefFeedback_Congruency)+.1, y = fit, ymin = lower, ymax = upper), width = .05)+
+  scale_colour_brewer(palette = "Set1")+
+  scale_fill_brewer(palette = "Set1")+  xlab("")+
+   ggtitle("B") +
+  #theme(plot.title = element_text(hjust = 0))+
+ # theme_apa(base_size = 12, base_family = "",box = TRUE)+
+  xlab("")+ ylab("")+coord_flip()+scale_x_discrete(labels = c('','')) +theme( axis.ticks.y = element_blank(),legend.position="none")+theme(plot.title = element_text(size=12))
+   
+legend <- get_legend(belief_cong_int)
+belief_cong_int <- belief_cong_int + theme(legend.position="none")
+
+# Create a blank plot
+blankPlot <- ggplot()+geom_blank(aes(1,1)) + 
+  cowplot::theme_nothing()
+
+```
+
+
+```{r, echo=FALSE, fig.cap= "Higher-level congruency effect on the changes in HF-HRV (nu) from baseline depicted as (A) an interaction between Biofeedback Congruency (biofeedback belongs to Congruent vs Incongruent) and Belief (Other vs Self) and as a (B) main effect where higher-level Congruency is coded as a single predictor (Congruent with Belief vs Incongruent with Belief). The raincloud plot provides data distribution, the central tendency by boxplots and the jittered presentation of our raw data. Error bars indicate 95% confidence intervals around the estimates of the linear mixed effects model. Both random intercept models include baseline HF-HRV (nu) as a covariate."}
+
+grid.arrange(belief_cong_int, belief_cong_main, legend, ncol=2, nrow = 2, 
+             layout_matrix = rbind(c(1,2), c(3,3)),
+             widths = c(2.7, 2.7), heights = c(2.5, 0.3))
+
+```
+
+# 4. General Discussion
+The integration of signals arising from within and outwith one's body has a primary role in self-awareness. Studies on multisensory integration [e.g. @Botvinick1998c; @Sforza2010; @Salomon2016; @Suzuki2013a; @Aspell2013a; @Sel2017] found evidence for both the stability and malleability of the self - mostly in the form of synchrony effects. Across two experiments, we tested whether the previously reported synchrony effects could be generalized to more abstract levels as higher-level congruency effects. Given that autonomic responses were recently suggested to reflect estimates of self stability [@Allen2018], we used an index of vagal control (i.e. the changes in HF-HRV) as an outcome measure of congruency effects. We observed that the changes in HF-HRV were predicted by differences in congruency on both lower and higher hierarchical levels of self-processing. Specifically, Experiment 1 revealed lower HF-HRV during incongruent feedback when compared to congruent feedback. Given that low-level congruency was induced by temporal alignment across cardiac and visual domains our result from Experiment 1 corresponds to the synchrony effects reported by previous studies[e.g. @Aspell2013a; @Salomon2016; @Suzuki2013a]. However, to emphasize the similarities in the mechanism across different hierarchical levels we use the term low-level congruency to describe this effect. Providing support to our hypothesis of a higher-level congruency effect, Experiment 2 identified an interaction between participants' beliefs and low-level congruency of the biofeedback signal. More precisely, when participants received biofeedback that was incongruent with their belief the change in vagal control was significantly lower than in the condition when their beliefs were veridical. Experiment 2 also measured the level of attention directed at the biofeedback through quantifying performance of counting green pulses. We found that all participants performed well - suggesting that they engaged with the task and sustained their attention at a good level throughout.
+Our results have important implications for the predictive models of the self. Earlier models [@Tsakiris2010b; @Seth2013a; @Apps2014] were focusing on the apparent differences between different sources (i.e. exteroceptive and interoceptive) of self-relevant information, whilst novel approaches emphasize the integration of these signals - which is proposed to be reflected by the balance between stability and adaptation [@Allen2018; @Seth2018].
+
+When interpreting our results within the PC framework we suggest that the participants' cardiac activity and their beliefs were used to generate predictive models of the timing of pulses and the movements of the biofeedback bar. The brain continuously estimates the sources of sensory input by comparing top-down predictions (priors) about sensory events and bottom-up sensory input. Incongruencies give rise to prediction errors (PE-s) that are passed upward to higher hierarchical cortical levels - that encode more abstract, supramodal representations - until they are resolved. In our study, the low-level congruency effect and the associated PE would arise from the multisensory level when unimodal exteroceptive (i.e. stability relevant visual signals) and interoceptive priors (i.e. stability estimations) get integrated. In comparison, a higher-level congruency effect could be generated by the mismatch between participants' beliefs and the multisensory biofeedback input. When PE is minimized a percept is formed that can lead to the attribution of the origin of biofeedback; specifically, when PE cannot be minimized sufficiently then the biofeedback would be attributed to someone else. Proprioceptive PE-s can be minimized through action [i.e. active inference, @Friston2009] engaging reflex arcs. Aligned with our findings, it has been suggested that *interoceptive* PE-s could be minimized through *autonomic* reflexes [@Pezzulo2014a; @Petzschner2017]. A way that autonomic reflexes could minimize PE is via adjusting the precision of interoceptive priors. Lowering the relative impact of interoceptive signals on perception enables the self to adapt to external stimuli whilst keeping its stability unperturbed. Given that autonomic responses could not only signal the *minimization* of PE but potentially be the error signals themselves, their exact interpretation will depend on the experimental design at hand. In our case, autonomic responses are more likely to represent *interoactions* [i.e. minimization of PE, @Seth2018] given that they arise in response to incongruencies - in contrast with a design that would focus on the effects of manipulating the autonomic responses themselves.   
+The primary aim of our two studies was not the understanding of the processes involved in explicit self-recognition of the biofeedback. However, future studies could adapt our methods in paradigm without the framing that we used here (i.e. the higher-level congruency manipulation) and the task instruction to detect whether the biofeedback originates from the self or from others, as in the design by @Azevedo2016a. Past research using behavioral measures revealed contradictory evidence regarding the link between interoceptive abilities (such as heartbeat detection or interoceptive accuracy) and biofeedback. While heartbeat perception seems to improve post-biofeedback [@Schandry1990], others found no difference between good or bad heartbeat perception groups in heart rate control performance [e.g. @DePascalis1991]. The findings on heartbeat evoked potential are more consistent, suggesting that the neural response associated with the attention directed to one's heartbeat is affected by the synchrony of the feedback [@Schandry1990; @Sel2017; @Pfeiffer2017]. However, more research is needed to understand the way low-level congruency influences interoception and whether it could be detected behaviorally. In line with our study it will be interesting to test whether state-like changes of interoception (measured by trial-by-trial cardiac recognition) are modulated by the autonomic response to the biofeedback signal. Given that the measures of HRV require a longer time window (i.e. at least 2 to 5 min) alternative indices of autonomic responses could be considered when optimizing the design of the task on cardiac recognition (e.g. measuring the pre-ejection period).
+To conclude, we adopted a novel approach in our experimental design investigating the psychophysiological stability and adaptability of the self by shifting the focus from the contributing factors to the *mechanism* itself. Across two experiments, we show that autonomic responses are sensitive to congruencies and incongruencies arising from the integration of sensory signals and predictions across multiple hierarchical levels. This finding provides supportive evidence for the role of autonomic responses in interoceptive processing as stability estimations that are engaged in the minimization of PE. 
+
+**Acknowledgments:** MT is supported by the European Research Council Consolidator Grant (ERC-2016-CoG-724537) for the INtheSELF Project under the FP7 and the NOMIS Foundation Distinguished Scientist Award.
+
+# References
+```{r create_r-references, echo=FALSE, message=FALSE, warning=FALSE}
+r_refs(file = "library.bib")
+```
+
+\begingroup
+\setlength{\parindent}{-0.5in}
+\setlength{\leftskip}{0.5in}
+
+<div id = "refs"></div>
+\endgroup
